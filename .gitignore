@@ -1,0 +1,17 @@
+# Local Codex state and credentials
+.codex/
+**/.codex/
+auth.json
+
+# Runtime databases, logs, and shell snapshots
+*.sqlite
+*.sqlite-*
+*.log
+shell_snapshots/
+thread-writer-locks/
+
+# Local editor and OS files
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini

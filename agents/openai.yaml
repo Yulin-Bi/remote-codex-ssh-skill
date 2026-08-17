@@ -1,0 +1,4 @@
+interface:
+  display_name: "Remote Codex SSH Setup"
+  short_description: "Configure remote Codex, SSH proxy, and persistent state"
+  default_prompt: "Use $remote-codex-ssh-setup to configure and validate Codex CLI on my remote Linux server."
