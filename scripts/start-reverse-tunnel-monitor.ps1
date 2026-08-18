@@ -5,7 +5,7 @@ param(
     [string]$SshHost,
     [ValidateSet('Official', 'Relay', 'Both')]
     [string]$Mode = 'Official',
-    [int]$LocalRelayPort = 55446
+    [string]$LocalRelayPort = 'auto'
 )
 
 $ErrorActionPreference = 'Stop'
