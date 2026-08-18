@@ -1,4 +1,4 @@
-# Remote Codex SSH Setup
+# Remote Codex SSH Skill
 
 [简体中文](#简体中文) · [English](#english)
 
