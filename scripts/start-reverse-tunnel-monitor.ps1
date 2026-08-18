@@ -2,7 +2,9 @@
 param(
     [string]$MonitorScript,
     [Parameter(Mandatory = $true)]
-    [string]$SshHost
+    [string]$SshHost,
+    [ValidateSet('Official', 'Relay', 'Both')]
+    [string]$Mode = 'Official'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -19,7 +21,7 @@ $existing = Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" -Error
     Where-Object { $_.CommandLine -and $_.CommandLine.Contains('monitor-reverse-tunnels.ps1') }
 
 if ($existing) {
-    $existing | ForEach-Object { "Monitor already running (pid=$($_.ProcessId))" }
+    $existing | ForEach-Object { "Monitor already running (pid=$($_.ProcessId)); stop it before changing mode" }
     exit 0
 }
 
@@ -35,7 +37,7 @@ if ($LASTEXITCODE -ne 0) {
 $powershell = Join-Path $windir 'System32\WindowsPowerShell\v1.0\powershell.exe'
 $process = Start-Process -FilePath $powershell -ArgumentList @(
     '-NoProfile', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden',
-    '-File', $MonitorScript, '-SshHost', $SshHost
+    '-File', $MonitorScript, '-SshHost', $SshHost, '-Mode', $Mode
 ) -WindowStyle Hidden -PassThru
 
-"Started reverse-tunnel monitor (pid=$($process.Id))"
+"Started reverse-tunnel monitor mode=$Mode (pid=$($process.Id))"

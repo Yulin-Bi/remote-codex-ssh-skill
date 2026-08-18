@@ -61,7 +61,12 @@ curl -x http://127.0.0.1:17897 \
 
 Treat any fast HTTP response as network reachability. A timeout means the reverse port, SSH process, local proxy, or proxy route is unhealthy.
 
-For a user-controlled watchdog, start [scripts/start-reverse-tunnel-monitor.ps1](scripts/start-reverse-tunnel-monitor.ps1) manually. It first probes the SSH host and prints an error without starting a background process when the server is unavailable. If the server later becomes unavailable, [scripts/monitor-reverse-tunnels.ps1](scripts/monitor-reverse-tunnels.ps1) exits after three failed probes instead of retrying forever. While the server is reachable, it checks both local services every 20 seconds and restarts only missing SSH forwards. It does not set global proxy variables and does not require a scheduled task. The monitor writes status to `%LOCALAPPDATA%\Codex\reverse-tunnels\monitor.log` on Windows.
+For a user-controlled watchdog, start [scripts/start-reverse-tunnel-monitor.ps1](scripts/start-reverse-tunnel-monitor.ps1) manually with `-Mode Official`, `-Mode Relay`, or `-Mode Both`. The default is `Official`. Prefer a single-route mode when only one Codex profile is in use so the inactive tunnel is not rebuilt. It first probes the SSH host and prints an error without starting a background process when the server is unavailable. If the server later becomes unavailable, [scripts/monitor-reverse-tunnels.ps1](scripts/monitor-reverse-tunnels.ps1) exits after three failed probes instead of retrying forever. It does not set global proxy variables and does not require a scheduled task. The monitor writes status to `%LOCALAPPDATA%\Codex\reverse-tunnels\monitor.log` on Windows.
+
+```powershell
+& .\scripts\start-reverse-tunnel-monitor.ps1 -SshHost 'your-ssh-host-alias' -Mode Official
+& .\scripts\start-reverse-tunnel-monitor.ps1 -SshHost 'your-ssh-host-alias' -Mode Relay
+```
 
 Keep separate reverse forwards for separate purposes. In the Huawei Dev Space setup used by this skill:
 

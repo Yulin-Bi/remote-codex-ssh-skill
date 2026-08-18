@@ -2,6 +2,8 @@
 param(
     [Parameter(Mandatory = $true)]
     [string]$SshHost,
+    [ValidateSet('Official', 'Relay', 'Both')]
+    [string]$Mode = 'Official',
     [int]$LocalProxyPort = 7897,
     [int]$RemoteProxyPort = 17897,
     [int]$LocalRelayPort = 55446,
@@ -89,11 +91,13 @@ if (-not (Test-Path -LiteralPath $ssh -PathType Leaf)) {
     exit 1
 }
 
-Write-Log "Monitor started for $SshHost"
+Write-Log "Monitor started for $SshHost mode=$Mode"
+$monitorOfficial = $Mode -in @('Official', 'Both')
+$monitorRelay = $Mode -in @('Relay', 'Both')
 $remoteFailures = 0
 while ($true) {
-    $needsOfficial = (Test-LocalListener $LocalProxyPort) -and (-not (Test-TunnelProcess $RemoteProxyPort $LocalProxyPort))
-    $needsRelay = (Test-LocalListener $LocalRelayPort) -and (-not (Test-TunnelProcess $RemoteRelayPort $LocalRelayPort))
+    $needsOfficial = $monitorOfficial -and (Test-LocalListener $LocalProxyPort) -and (-not (Test-TunnelProcess $RemoteProxyPort $LocalProxyPort))
+    $needsRelay = $monitorRelay -and (Test-LocalListener $LocalRelayPort) -and (-not (Test-TunnelProcess $RemoteRelayPort $LocalRelayPort))
 
     if (($needsOfficial -or $needsRelay) -and (-not (Test-RemoteServer))) {
         $remoteFailures++
@@ -106,7 +110,11 @@ while ($true) {
     }
 
     $remoteFailures = 0
-    Start-Tunnel $RemoteProxyPort $LocalProxyPort
-    Start-Tunnel $RemoteRelayPort $LocalRelayPort
+    if ($monitorOfficial) {
+        Start-Tunnel $RemoteProxyPort $LocalProxyPort
+    }
+    if ($monitorRelay) {
+        Start-Tunnel $RemoteRelayPort $LocalRelayPort
+    }
     Start-Sleep -Seconds $IntervalSeconds
 }

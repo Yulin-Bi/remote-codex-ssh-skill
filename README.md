@@ -133,6 +133,22 @@ curl -sS -o /dev/null \
 - 同一个 Linux 用户下，移动 `CODEX_HOME` 不能隔离不同人的账号
 - 本地反向隧道依赖本机、代理程序、SSH 连接和远程开发环境持续在线
 
+### 选择监控线路
+
+监控器支持三种显式模式：
+
+```powershell
+& .\scripts\start-reverse-tunnel-monitor.ps1 `
+  -SshHost 'your-ssh-host-alias' `
+  -Mode Official
+
+& .\scripts\start-reverse-tunnel-monitor.ps1 `
+  -SshHost 'your-ssh-host-alias' `
+  -Mode Relay
+```
+
+`Official` 只维护官方代理隧道并且是默认模式，`Relay` 只维护本地 API 中转隧道，`Both` 保留原来的双隧道行为。通常应选择正在使用的单线路模式，这样另一条线路断开后不会被反复重建。同一时间只允许一个监控进程；切换模式前先停止旧监控。
+
 ## English
 
 Configure and maintain Codex CLI on a remote Linux/WebIDE environment through SSH and reverse tunnels.
@@ -175,7 +191,19 @@ Never commit `auth.json`, SQLite state, logs, or any other credential-bearing fi
 
 Use `scripts/start-reverse-tunnel.ps1` with your own SSH alias and port values. Keep reverse forwards bound to loopback. Do not export `HTTP_PROXY`, `HTTPS_PROXY`, or `ALL_PROXY` globally in `.bashrc`; use named launchers so internal IDE tools do not inherit the proxy.
 
-Use `scripts/start-reverse-tunnel-monitor.ps1 -SshHost 'your-ssh-host-alias'` when you need a manually controlled watchdog. It checks server availability before starting and exits after repeated server failures.
+Use one explicit route when you need a manually controlled watchdog:
+
+```powershell
+& .\scripts\start-reverse-tunnel-monitor.ps1 `
+  -SshHost 'your-ssh-host-alias' `
+  -Mode Official
+
+& .\scripts\start-reverse-tunnel-monitor.ps1 `
+  -SshHost 'your-ssh-host-alias' `
+  -Mode Relay
+```
+
+`Official` maintains only the official proxy tunnel and is the default, `Relay` maintains only the local API relay tunnel, and `Both` retains the previous dual-tunnel behavior. The monitor checks server availability before starting and exits after repeated server failures. Only one monitor process runs at a time; stop the existing monitor before switching modes.
 
 ### Compatibility and security
 
