@@ -144,7 +144,8 @@ curl -sS -o /dev/null \
 
 & .\scripts\start-reverse-tunnel-monitor.ps1 `
   -SshHost 'your-ssh-host-alias' `
-  -Mode Relay
+  -Mode Relay `
+  -LocalRelayPort '<local-relay-port>'
 ```
 
 `Official` 只维护官方代理隧道并且是默认模式，`Relay` 只维护本地 API 中转隧道，`Both` 保留原来的双隧道行为。通常应选择正在使用的单线路模式，这样另一条线路断开后不会被反复重建。同一时间只允许一个监控进程；切换模式前先停止旧监控。
@@ -200,7 +201,8 @@ Use one explicit route when you need a manually controlled watchdog:
 
 & .\scripts\start-reverse-tunnel-monitor.ps1 `
   -SshHost 'your-ssh-host-alias' `
-  -Mode Relay
+  -Mode Relay `
+  -LocalRelayPort '<local-relay-port>'
 ```
 
 `Official` maintains only the official proxy tunnel and is the default, `Relay` maintains only the local API relay tunnel, and `Both` retains the previous dual-tunnel behavior. The monitor checks server availability before starting and exits after repeated server failures. Only one monitor process runs at a time; stop the existing monitor before switching modes.

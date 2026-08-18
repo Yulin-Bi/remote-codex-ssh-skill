@@ -4,7 +4,8 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$SshHost,
     [ValidateSet('Official', 'Relay', 'Both')]
-    [string]$Mode = 'Official'
+    [string]$Mode = 'Official',
+    [int]$LocalRelayPort = 55446
 )
 
 $ErrorActionPreference = 'Stop'
@@ -37,7 +38,8 @@ if ($LASTEXITCODE -ne 0) {
 $powershell = Join-Path $windir 'System32\WindowsPowerShell\v1.0\powershell.exe'
 $process = Start-Process -FilePath $powershell -ArgumentList @(
     '-NoProfile', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden',
-    '-File', $MonitorScript, '-SshHost', $SshHost, '-Mode', $Mode
+    '-File', $MonitorScript, '-SshHost', $SshHost, '-Mode', $Mode,
+    '-LocalRelayPort', $LocalRelayPort
 ) -WindowStyle Hidden -PassThru
 
 "Started reverse-tunnel monitor mode=$Mode (pid=$($process.Id))"
